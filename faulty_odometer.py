@@ -1,4 +1,4 @@
-def calculate_distance_from_fault_odometer(faulty_reading):
+def calculate_distance_from_faulty_odometer(faulty_reading):
     """
     Calculates the correct distance travelled from the reading of a fault odometer.
     The odometer skips the digit 5, so it goes from 4 to 6.
@@ -17,24 +17,23 @@ def calculate_distance_from_fault_odometer(faulty_reading):
     --------
     calculate_distance_from_fault_odometer(6) # Outputs: 5
     """
-    reading_as_str = str(faulty_reading)
-    reading_difference = 0
-    current_skipped_fives = 0
+    # The simplest way to calculate the correct distance is to realise that all the digits are in base 9 in the fault reading
+    # So we convert the base 9 number to base 10, accounting for the numbers over 5.
+    correct_reading = 0
+    power = 0
+    while faulty_reading > 0:
+        current_digit = faulty_reading % 10
+        faulty_reading //= 10
 
-    # The digits to the left of a digit are the number of times the digit 5 was skipped
-    for i, x in enumerate(reading_as_str):
-        skipped_fives = current_skipped_fives
-        if int(x) > 5:
-            skipped_fives += 1
+        if current_digit > 5:
+            current_digit -= 1
 
-        reading_difference += skipped_fives * (10 ** (len(reading_as_str) - i - 1))
+        correct_reading += current_digit * (9 ** power)
+        power += 1
 
-        current_skipped_fives *= 10
-        current_skipped_fives += int(x)
-
-    return faulty_reading - reading_difference
+    return correct_reading
 
 if __name__ == '__main__':
-    faulty_reading = int(input("Enter the faulty reading from the odometer: "))
+    user_reading = int(input("Enter the faulty reading from the odometer: "))
 
-    print(f"The correct distance travelled is {calculate_distance_from_fault_odometer(faulty_reading)} miles")
+    print(f"The correct distance travelled is {calculate_distance_from_faulty_odometer(user_reading)} miles")
